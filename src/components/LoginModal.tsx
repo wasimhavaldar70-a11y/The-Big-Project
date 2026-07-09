@@ -23,36 +23,7 @@ interface LoginModalProps {
   onLoginSuccess: (role: 'superadmin' | 'owner', ownerData?: ShopOwner) => void;
 }
 
-const DEFAULT_SHOP_OWNERS: ShopOwner[] = [
-  {
-    id: 'owner-1',
-    ownerName: 'Rajesh Verma',
-    shopName: 'Suvarna Gold Loan & Jewellery Co.',
-    email: 'rajesh@suvarnaloan.com',
-    phone: '+91 70585 36371',
-    password: 'owner123',
-    plan: 'Sovereign Pro',
-    status: 'Active',
-    dateJoined: '12 Jan 2026',
-    loansCount: 12,
-    totalPledgedGold: '284.5 gm',
-    outstandingAmount: 1450000
-  },
-  {
-    id: 'owner-2',
-    ownerName: 'Priya Sharma',
-    shopName: 'Sharma Bullion & Gold Loans',
-    email: 'priya@sharmabullion.com',
-    phone: '+91 98765 43210',
-    password: 'priya123',
-    plan: 'Standard',
-    status: 'Active',
-    dateJoined: '04 Mar 2026',
-    loansCount: 4,
-    totalPledgedGold: '92.3 gm',
-    outstandingAmount: 480000
-  }
-];
+const DEFAULT_SHOP_OWNERS: ShopOwner[] = [];
 
 import { getSupabase, isSupabaseConfigured } from '../lib/supabase';
 

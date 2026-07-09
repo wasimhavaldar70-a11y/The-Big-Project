@@ -94,76 +94,10 @@ export default function Dashboard({
   });
 
   // Main list of loans
-  const [loans, setLoans] = useState<any[]>([
-    {
-      id: 'SL-2024-1050',
-      customerName: 'Suresh Patil',
-      phone: '+91 98452 11045',
-      amount: 125000,
-      weight: 25.300,
-      purity: '22K',
-      pledgedItem: 'Gold Chain (Heavy)',
-      loanDate: '20 May 2024',
-      dueDate: '20 Jun 2024',
-      status: 'Active'
-    },
-    {
-      id: 'SL-2024-1049',
-      customerName: 'Amit Sharma',
-      phone: '+91 88795 32112',
-      amount: 85000,
-      weight: 18.600,
-      purity: '22K',
-      pledgedItem: '2 Gold Bangles',
-      loanDate: '19 May 2024',
-      dueDate: '19 Jun 2024',
-      status: 'Active'
-    },
-    {
-      id: 'SL-2024-1048',
-      customerName: 'Kavita Jadhav',
-      phone: '+91 91102 78334',
-      amount: 450000,
-      weight: 92.500,
-      purity: '24K',
-      pledgedItem: 'Gold Necklace & Ring Set',
-      loanDate: '15 May 2024',
-      dueDate: '15 Jun 2024',
-      status: 'Active'
-    },
-    {
-      id: 'SL-2024-1047',
-      customerName: 'Ramesh Gupta',
-      phone: '+91 70192 88471',
-      amount: 110000,
-      weight: 22.800,
-      purity: '22K',
-      pledgedItem: 'Traditional Kada (Gold)',
-      loanDate: '12 May 2024',
-      dueDate: '12 Jun 2024',
-      status: 'Overdue'
-    },
-    {
-      id: 'SL-2024-1046',
-      customerName: 'Prakash More',
-      phone: '+91 99008 34112',
-      amount: 64000,
-      weight: 14.100,
-      purity: '18K',
-      pledgedItem: 'Gold Pendant',
-      loanDate: '10 May 2024',
-      dueDate: '10 Jun 2024',
-      status: 'Closed'
-    }
-  ]);
+  const [loans, setLoans] = useState<any[]>([]);
 
   // Recent Activity State
-  const [activities, setActivities] = useState<any[]>([
-    { id: 'act-1', text: 'Payment received from Suresh Patil', amount: 5200, time: '2 min ago', type: 'payment' },
-    { id: 'act-2', text: 'New loan created for Amit Sharma', amount: 75000, time: '15 min ago', type: 'loan' },
-    { id: 'act-3', text: 'Invoice sent to Kavita Jadhav', amount: 2350, time: '1 hour ago', type: 'invoice' },
-    { id: 'act-4', text: 'Gold item updated for Ramesh Gupta', amount: null, time: '2 hours ago', type: 'update' }
-  ]);
+  const [activities, setActivities] = useState<any[]>([]);
 
   // Form states for creating a new loan
   const [newLoanForm, setNewLoanForm] = useState({
@@ -200,13 +134,7 @@ export default function Dashboard({
   }, [currentOwner]);
 
   // Active Customers State
-  const [customers, setCustomers] = useState<any[]>([
-    { id: 'CUST-001', name: 'Suresh Patil', phone: '+91 98452 11045', kycStatus: 'Verified', email: 'suresh.patil@gmail.com', address: 'Andheri West, Mumbai', aadhaar: '453298127432', pan: 'AHGPS9012K', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&h=150&q=80', activeLoans: 1, registeredAt: '12 Jan 2024' },
-    { id: 'CUST-002', name: 'Amit Sharma', phone: '+91 88795 32112', kycStatus: 'Verified', email: 'amit.sharma@yahoo.com', address: 'Dadar, Mumbai', aadhaar: '891234210092', pan: 'BZKPA3210F', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&h=150&q=80', activeLoans: 1, registeredAt: '15 Feb 2024' },
-    { id: 'CUST-003', name: 'Kavita Jadhav', phone: '+91 91102 78334', kycStatus: 'Verified', email: 'kavita.j@gmail.com', address: 'Kothrud, Pune', aadhaar: '672198014543', pan: 'CMKPD4598M', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&h=150&q=80', activeLoans: 1, registeredAt: '19 Mar 2024' },
-    { id: 'CUST-004', name: 'Ramesh Gupta', phone: '+91 70192 88471', kycStatus: 'Pending', email: 'ramesh.gupta@outlook.com', address: 'Thane, Mumbai', aadhaar: '203456129012', pan: 'EPKPG9821L', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&h=150&q=80', activeLoans: 1, registeredAt: '02 Apr 2024' },
-    { id: 'CUST-005', name: 'Prakash More', phone: '+91 99008 34112', kycStatus: 'Rejected', email: 'prakash.more@gmail.com', address: 'Hadapsar, Pune', aadhaar: '772109328843', pan: 'FJKPM1029Q', avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=150&h=150&q=80', activeLoans: 0, registeredAt: '28 Apr 2024' },
-  ]);
+  const [customers, setCustomers] = useState<any[]>([]);
 
   const [isAddCustOpen, setIsAddCustOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<any | null>(null);
@@ -222,11 +150,7 @@ export default function Dashboard({
   });
 
   // Payments Ledger State
-  const [payments, setPayments] = useState<any[]>([
-    { id: 'PAY-101', loanId: 'SL-2024-1050', customerName: 'Suresh Patil', amount: 5200, type: 'Interest', date: '07 Jul 2026', mode: 'UPI' },
-    { id: 'PAY-102', loanId: 'SL-2024-1047', customerName: 'Ramesh Gupta', amount: 15000, type: 'Principal', date: '06 Jul 2026', mode: 'Cash' },
-    { id: 'PAY-103', loanId: 'SL-2024-1049', customerName: 'Amit Sharma', amount: 3100, type: 'Interest', date: '02 Jul 2026', mode: 'Bank Transfer' },
-  ]);
+  const [payments, setPayments] = useState<any[]>([]);
 
   const [isNewPaymentOpen, setIsNewPaymentOpen] = useState(false);
   const [newPaymentForm, setNewPaymentForm] = useState({
@@ -237,21 +161,10 @@ export default function Dashboard({
   });
 
   // Pledged Items / Locker Vault State
-  const [pledgedItems, setPledgedItems] = useState<any[]>([
-    { id: 'PLG-901', description: 'Gold Chain (Heavy)', weight: '25.300 gm', purity: '22K', customer: 'Suresh Patil', locker: 'Locker A-12', value: 170400, status: 'Secured' },
-    { id: 'PLG-902', description: '2 Gold Bangles', weight: '18.600 gm', purity: '22K', customer: 'Amit Sharma', locker: 'Locker A-15', value: 125200, status: 'Secured' },
-    { id: 'PLG-903', description: 'Gold Necklace & Ring Set', weight: '92.500 gm', purity: '24K', customer: 'Kavita Jadhav', locker: 'Vault Room-1', value: 679800, status: 'Secured' },
-    { id: 'PLG-904', description: 'Traditional Kada (Gold)', weight: '22.800 gm', purity: '22K', customer: 'Ramesh Gupta', locker: 'Locker B-04', value: 153500, status: 'Secured' },
-    { id: 'PLG-905', description: 'Gold Pendant', weight: '14.100 gm', purity: '18K', customer: 'Prakash More', locker: 'Locker C-02', value: 77700, status: 'Released' },
-  ]);
+  const [pledgedItems, setPledgedItems] = useState<any[]>([]);
 
   // Employees Roster State
-  const [employees, setEmployees] = useState<any[]>([
-    { id: 'EMP-01', name: 'Rohan Deshmukh', role: 'Branch Manager', phone: '+91 98200 12345', branch: 'Mumbai Main Branch', status: 'Active' },
-    { id: 'EMP-02', name: 'Sneha Kulkarni', role: 'Gold Valuer', phone: '+91 98199 54321', branch: 'Mumbai Main Branch', status: 'Active' },
-    { id: 'EMP-03', name: 'Vikram Shinde', role: 'Loan Officer', phone: '+91 97022 88990', branch: 'Pune Sub Branch', status: 'Active' },
-    { id: 'EMP-04', name: 'Priya Joshi', role: 'Cashier', phone: '+91 96111 22334', branch: 'Mumbai Main Branch', status: 'Active' },
-  ]);
+  const [employees, setEmployees] = useState<any[]>([]);
 
   const [isAddEmpOpen, setIsAddEmpOpen] = useState(false);
   const [newEmpForm, setNewEmpForm] = useState({
@@ -262,19 +175,10 @@ export default function Dashboard({
   });
 
   // Branches State
-  const [branches, setBranches] = useState<any[]>([
-    { id: 'BR-01', name: 'Mumbai Main Branch', city: 'Mumbai', address: 'Opera House, Charni Road', phone: '+91 22 2345 6789', staffCount: 8, ledgerAmount: 24500000, status: 'Open' },
-    { id: 'BR-02', name: 'Pune Sub Branch', city: 'Pune', address: 'FC Road, Shivaji Nagar', phone: '+91 20 2567 8901', staffCount: 4, ledgerAmount: 8500000, status: 'Open' },
-    { id: 'BR-03', name: 'Secure Vault Facility', city: 'Mumbai', address: 'Fort Financial District', phone: '+91 22 4001 0022', staffCount: 3, ledgerAmount: 0, status: 'Restricted' },
-  ]);
+  const [branches, setBranches] = useState<any[]>([]);
 
   // Notifications Log State
-  const [notifications, setNotifications] = useState<any[]>([
-    { id: 'NTF-01', type: 'overdue', message: 'Loan SL-2024-1047 for Ramesh Gupta is 25 days overdue.', severity: 'high', unread: true, date: 'Today' },
-    { id: 'NTF-02', type: 'kyc', message: 'Kavita Jadhav uploaded fresh PAN Card for re-verification.', severity: 'medium', unread: true, date: 'Today' },
-    { id: 'NTF-03', type: 'system', message: 'Locker A-15 status changed to Secure Vault.', severity: 'low', unread: false, date: 'Yesterday' },
-    { id: 'NTF-04', type: 'rate', message: 'Gold rate increased by ₹120/gm. Updates pushed to valuation calculators.', severity: 'low', unread: false, date: 'Yesterday' },
-  ]);
+  const [notifications, setNotifications] = useState<any[]>([]);
 
   // Printable Invoice & Appraisal Certificate Modal State
   const [activeInvoice, setActiveInvoice] = useState<any>(null);
@@ -349,6 +253,8 @@ export default function Dashboard({
   // Attempt to sync and fetch with Supabase
   useEffect(() => {
     async function loadSupabaseData() {
+      localStorage.removeItem('suvarna_loans');
+      localStorage.removeItem('suvarna_shop_owners');
       if (isSupabaseConfigured) {
         setDbStatus('connecting');
         const supabase = getSupabase();
@@ -392,7 +298,7 @@ export default function Dashboard({
                 .select('*')
                 .order('created_at', { ascending: false });
 
-              if (!custFetchError && fetchedCustomers && fetchedCustomers.length > 0) {
+              if (!custFetchError && fetchedCustomers) {
                 setCustomers(fetchedCustomers.map((c: any) => ({
                   id: c.id,
                   name: c.name,
@@ -406,33 +312,6 @@ export default function Dashboard({
                   activeLoans: c.active_loans_count || 0,
                   registeredAt: c.created_at ? new Date(c.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Today'
                 })));
-              } else if (!custFetchError) {
-                // Seed database with mock customers
-                const defaultCustomers = [
-                  { name: 'Suresh Patil', phone: '+91 98452 11045', kyc_status: 'Verified', email: 'suresh.patil@gmail.com', address: 'Andheri West, Mumbai', aadhaar: '453298127432', pan: 'AHGPS9012K', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&h=150&q=80', active_loans_count: 1 },
-                  { name: 'Amit Sharma', phone: '+91 88795 32112', kyc_status: 'Verified', email: 'amit.sharma@yahoo.com', address: 'Dadar, Mumbai', aadhaar: '891234210092', pan: 'BZKPA3210F', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&h=150&q=80', active_loans_count: 1 },
-                  { name: 'Kavita Jadhav', phone: '+91 91102 78334', kyc_status: 'Verified', email: 'kavita.j@gmail.com', address: 'Kothrud, Pune', aadhaar: '672198014543', pan: 'CMKPD4598M', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&h=150&q=80', active_loans_count: 1 },
-                  { name: 'Ramesh Gupta', phone: '+91 70192 88471', kyc_status: 'Pending', email: 'ramesh.gupta@outlook.com', address: 'Thane, Mumbai', aadhaar: '203456129012', pan: 'EPKPG9821L', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&h=150&q=80', active_loans_count: 1 },
-                  { name: 'Prakash More', phone: '+91 99008 34112', kyc_status: 'Rejected', email: 'prakash.more@gmail.com', address: 'Hadapsar, Pune', aadhaar: '772109328843', pan: 'FJKPM1029Q', avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=150&h=150&q=80', active_loans_count: 0 }
-                ];
-                await supabase.from('customers').insert(defaultCustomers);
-                // Reload
-                const { data: reloaded } = await supabase.from('customers').select('*').order('created_at', { ascending: false });
-                if (reloaded) {
-                  setCustomers(reloaded.map((c: any) => ({
-                    id: c.id,
-                    name: c.name,
-                    phone: c.phone,
-                    email: c.email || `${c.name.toLowerCase().replace(/\s+/g, '')}@gmail.com`,
-                    address: c.address || 'Registered during Gold Loan pledge',
-                    aadhaar: c.aadhaar || '',
-                    pan: c.pan || '',
-                    avatar: c.avatar || '',
-                    kycStatus: c.kyc_status || 'Pending',
-                    activeLoans: c.active_loans_count || 0,
-                    registeredAt: c.created_at ? new Date(c.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Today'
-                  })));
-                }
               }
             }
           } catch (e) {
