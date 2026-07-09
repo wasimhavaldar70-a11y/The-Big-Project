@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", ui-serif, Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-gold-50: #fefcf3;
+  --color-gold-100: #fbf5df;
+  --color-gold-200: #f5e4b7;
+  --color-gold-500: #b48536;
+  --color-gold-600: #9e6f28;
+  --color-gold-700: #81541c;
+  --color-navy-900: #101827;
+  --color-navy-950: #030712;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #fbfcff;
+  color: #1a202c;
+  overflow-x: hidden;
+}
+
+/* Custom premium pastel mesh gradient background (As seen in Creatika web mockup) */
+.bg-modern-gradient {
+  background-color: #fbfcff;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(255, 255, 255, 0.4) 0px, transparent 50%),
+    radial-gradient(at 80% 15%, hsla(271, 95%, 93%, 0.5) 0px, transparent 50%), 
+    radial-gradient(at 15% 10%, hsla(16, 95%, 93%, 0.6) 0px, transparent 55%), 
+    radial-gradient(at 50% 45%, hsla(340, 95%, 94%, 0.55) 0px, transparent 60%), 
+    radial-gradient(at 90% 75%, hsla(220, 95%, 92%, 0.55) 0px, transparent 50%), 
+    radial-gradient(at 10% 80%, hsla(140, 95%, 93%, 0.45) 0px, transparent 50%);
+  background-attachment: fixed;
+}
+
+/* Custom animated glow backgrounds & decorative accents */
+.bg-marble-gradient {
+  background: radial-gradient(circle at 10% 20%, rgba(254, 252, 243, 0.9) 0%, rgba(250, 249, 246, 1) 90%);
+}
+
+@keyframes moving-gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.bg-moving-gradient {
+  background-size: 200% 200%;
+  animation: moving-gradient 12s ease infinite;
+}
+
+.glow-gold {
+  box-shadow: 0 0 40px rgba(180, 133, 54, 0.15);
+}
+

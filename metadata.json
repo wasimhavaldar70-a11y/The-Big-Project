@@ -1,0 +1,6 @@
+{
+  "name": "SuvarnaLoan ERP",
+  "description": "India's Trusted Gold Loan ERP for Jewellers. Transform your jewellery shop into a smart gold loan business with live analytics, customer KYC, automated interest calculations, and secure cloud backups.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
