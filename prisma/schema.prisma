@@ -1,0 +1,53 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Customer {
+  id                 String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name               String
+  phone              String
+  kycStatus          String     @default("Pending") @map("kyc_status")
+  activeLoansCount   Int        @default(0) @map("active_loans_count")
+  totalPledgedWeight Float      @default(0) @map("total_pledged_weight")
+  totalLoanAmount    Float      @default(0) @map("total_loan_amount")
+  avatar             String?
+  createdAt          DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+  loans              GoldLoan[]
+
+  @@map("customers")
+}
+
+model GoldLoan {
+  id           String   @id
+  customerName String   @map("customer_name")
+  customerId   String   @map("customer_id") @db.Uuid
+  customer     Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  amount       Float
+  interestRate Float    @map("interest_rate")
+  weight       Float
+  purity       String
+  pledgedItem  String   @map("pledged_item")
+  dueDate      String   @map("due_date")
+  status       String
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@map("gold_loans")
+}
+
+model Activity {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title     String
+  amount    Float?
+  timeAgo   String   @map("time_ago")
+  type      String
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@map("activities")
+}
