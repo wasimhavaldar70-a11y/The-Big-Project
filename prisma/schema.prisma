@@ -58,7 +58,6 @@ model ShopOwner {
   shopName          String  @map("shop_name")
   email             String  @unique
   phone             String
-  pin               String
   password          String?
   plan              String
   status            String  @default("Active")

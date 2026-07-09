@@ -28,7 +28,7 @@ export default function SuperAdminDashboard({ onLogout, onImpersonateOwner }: Su
   const [shopName, setShopName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [pin, setPin] = useState('');
+
   const [password, setPassword] = useState('');
   const [plan, setPlan] = useState<ShopOwner['plan']>('Standard');
   const [status, setStatus] = useState<ShopOwner['status']>('Active');
@@ -51,7 +51,7 @@ export default function SuperAdminDashboard({ onLogout, onImpersonateOwner }: Su
               shopName: o.shop_name,
               email: o.email,
               phone: o.phone,
-              pin: o.pin,
+
               password: o.password || undefined,
               plan: o.plan,
               status: o.status,
@@ -87,7 +87,7 @@ export default function SuperAdminDashboard({ onLogout, onImpersonateOwner }: Su
     setShopName('');
     setEmail('');
     setPhone('');
-    setPin(Math.floor(1000 + Math.random() * 9000).toString()); // Auto-generate random 4-digit PIN
+
     setPassword('owner123'); // Default secure password
     setPlan('Standard');
     setStatus('Active');
@@ -101,7 +101,7 @@ export default function SuperAdminDashboard({ onLogout, onImpersonateOwner }: Su
     setShopName(owner.shopName);
     setEmail(owner.email);
     setPhone(owner.phone);
-    setPin(owner.pin);
+
     setPassword(owner.password || 'owner123');
     setPlan(owner.plan);
     setStatus(owner.status);
@@ -161,7 +161,6 @@ export default function SuperAdminDashboard({ onLogout, onImpersonateOwner }: Su
     if (!shopName.trim()) return setFormError('Shop name is required.');
     if (!email.trim() || !email.includes('@')) return setFormError('Valid email is required.');
     if (!phone.trim()) return setFormError('Phone number is required.');
-    if (pin.length !== 4 || isNaN(Number(pin))) return setFormError('PIN must be exactly 4 digits.');
     if (password.length < 4) return setFormError('Password must be at least 4 characters.');
 
     if (editingOwner) {
@@ -172,7 +171,6 @@ export default function SuperAdminDashboard({ onLogout, onImpersonateOwner }: Su
         shopName: shopName.trim(),
         email: email.trim(),
         phone: phone.trim(),
-        pin,
         password,
         plan,
         status
@@ -187,7 +185,6 @@ export default function SuperAdminDashboard({ onLogout, onImpersonateOwner }: Su
               shop_name: updatedOwner.shopName,
               email: updatedOwner.email,
               phone: updatedOwner.phone,
-              pin: updatedOwner.pin,
               password: updatedOwner.password,
               plan: updatedOwner.plan,
               status: updatedOwner.status
@@ -209,9 +206,7 @@ export default function SuperAdminDashboard({ onLogout, onImpersonateOwner }: Su
     } else {
       // Create mode
       const isEmailTaken = shopOwners.some(o => o.email.toLowerCase() === email.trim().toLowerCase());
-      const isPinTaken = shopOwners.some(o => o.pin === pin);
       if (isEmailTaken) return setFormError('A shop owner with this email already exists.');
-      if (isPinTaken) return setFormError('This PIN is already assigned to another owner. Please choose a different PIN.');
 
       const newOwner: ShopOwner = {
         id: `owner-${Date.now()}`,
@@ -219,7 +214,6 @@ export default function SuperAdminDashboard({ onLogout, onImpersonateOwner }: Su
         shopName: shopName.trim(),
         email: email.trim(),
         phone: phone.trim(),
-        pin,
         password,
         plan,
         status,
@@ -239,7 +233,6 @@ export default function SuperAdminDashboard({ onLogout, onImpersonateOwner }: Su
               shop_name: newOwner.shopName,
               email: newOwner.email,
               phone: newOwner.phone,
-              pin: newOwner.pin,
               password: newOwner.password,
               plan: newOwner.plan,
               status: newOwner.status,
@@ -478,10 +471,6 @@ export default function SuperAdminDashboard({ onLogout, onImpersonateOwner }: Su
 
                       {/* Credentials indicator */}
                       <div className="flex items-center gap-4 mt-2.5 text-[10px] text-slate-500 font-mono">
-                        <span className="flex items-center gap-1">
-                          <Key className="w-3 h-3" />
-                          PIN: <strong className="text-slate-300">{owner.pin}</strong>
-                        </span>
                         <span>
                           Password: <strong className="text-slate-300">{owner.password || 'owner123'}</strong>
                         </span>
@@ -680,25 +669,7 @@ export default function SuperAdminDashboard({ onLogout, onImpersonateOwner }: Su
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 p-3.5 bg-slate-950/80 rounded-xl border border-slate-800/50">
-                  
-                  {/* Security PIN */}
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-amber-400 uppercase flex items-center gap-1">
-                      <Lock className="w-3 h-3" />
-                      Secure 4-Digit PIN
-                    </label>
-                    <input
-                      type="text"
-                      maxLength={4}
-                      required
-                      value={pin}
-                      onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
-                      placeholder="e.g. 1234"
-                      className="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 focus:border-amber-400 outline-none rounded-lg text-xs text-white font-mono tracking-widest text-center"
-                    />
-                  </div>
-
+                <div className="p-3.5 bg-slate-950/80 rounded-xl border border-slate-800/50">
                   {/* Security Password */}
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-amber-400 uppercase flex items-center gap-1">
