@@ -42,7 +42,9 @@ export default function App() {
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
   const [isSignUpModalOpen, setIsSignUpModalOpen] = useState<boolean>(false);
-  const [view, setView] = useState<'landing' | 'dashboard'>('landing');
+  const [view, setView] = useState<'landing' | 'dashboard'>(() => {
+    return localStorage.getItem('suvarna_logged_in') === 'true' ? 'dashboard' : 'landing';
+  });
 
   // Listen to custom event to open Book Demo Modal from subcomponents
   React.useEffect(() => {
@@ -433,9 +435,9 @@ export default function App() {
 
           </div>
 
-          {/* Hero Right Device Mockups Column - Clean, Premium Placeholder for Future Image */}
+          {/* Hero Right Device Mockups Column - Clean, Premium Card for Login & Signup */}
           <div className="lg:col-span-7 mt-12 lg:mt-0 flex items-center justify-center">
-            <div className="w-full max-w-xl bg-white/40 backdrop-blur-md rounded-3xl border border-dashed border-slate-300 p-8 sm:p-12 text-center shadow-lg relative overflow-hidden group hover:border-amber-400/60 transition-all duration-300">
+            <div className="w-full max-w-xl bg-white p-8 sm:p-12 rounded-3xl shadow-xl border border-slate-100 text-center relative overflow-hidden group hover:border-amber-400/30 transition-all duration-300">
               
               {/* Abstract decorative ambient gradients */}
               <div className="absolute top-0 right-0 w-32 h-32 bg-amber-400/5 rounded-full blur-xl pointer-events-none"></div>
@@ -445,39 +447,33 @@ export default function App() {
                 
                 {/* Visual Icon Stack */}
                 <div className="relative">
-                  <div className="w-20 h-20 bg-gradient-to-tr from-amber-100 to-orange-100 text-amber-600 rounded-2xl flex items-center justify-center shadow-md shadow-amber-500/10 group-hover:scale-105 transition-transform duration-300">
-                    <svg className="w-10 h-10" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375 0 11-.75 0 .375 0 01.75 0z" />
-                    </svg>
-                  </div>
-                  {/* Plus Badge */}
-                  <div className="absolute -bottom-1 -right-1 bg-amber-500 text-white rounded-full p-1 border-2 border-white shadow-sm flex items-center justify-center">
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                    </svg>
+                  <div className="w-20 h-20 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center border border-amber-100 shadow-sm mx-auto group-hover:scale-105 transition-transform duration-300">
+                    <Scale className="w-10 h-10" />
                   </div>
                 </div>
 
                 {/* Main Labeling */}
                 <div className="space-y-2">
-                  <h3 className="text-lg font-bold text-slate-800">SuvarnaLoan Hero Graphic</h3>
+                  <h3 className="text-xl font-bold text-slate-800">Suvarna Gold Loan Panel</h3>
                   <p className="text-slate-500 text-xs max-w-sm mx-auto leading-relaxed">
-                    This space is reserved for your custom high-quality product illustration, dashboard screenshot, or promotional device mockup.
+                    Secure real-time dashboard tracking, branch cash ceilings, and pawned bullion transactions.
                   </p>
                 </div>
 
-                {/* Interactive Developer / Admin Hint Badge */}
-                <div className="inline-flex items-center gap-2 bg-amber-50/80 border border-amber-200/50 text-amber-700 text-[11px] font-semibold px-4 py-2 rounded-xl">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-                  <span>Placeholder Active • Ready to receive your image file</span>
-                </div>
-
-                {/* Modern visual grid preview overlay to look exceptionally elegant */}
-                <div className="w-full grid grid-cols-3 gap-3 pt-4 opacity-40">
-                  <div className="h-2 bg-slate-200 rounded-full"></div>
-                  <div className="h-2 bg-slate-200 rounded-full col-span-2"></div>
-                  <div className="h-2 bg-slate-200 rounded-full col-span-2"></div>
-                  <div className="h-2 bg-slate-200 rounded-full"></div>
+                {/* Authentication actions */}
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full pt-2">
+                  <button 
+                    onClick={() => setIsLoginModalOpen(true)}
+                    className="w-full sm:w-auto bg-[#0A1A36] hover:bg-[#1B2B4C] text-white font-bold text-xs py-3 px-6 rounded-xl transition-all cursor-pointer shadow-md text-center"
+                  >
+                    Log in to Dashboard
+                  </button>
+                  <button 
+                    onClick={() => setIsSignUpModalOpen(true)}
+                    className="w-full sm:w-auto border border-amber-500 text-amber-600 hover:bg-amber-50 font-bold text-xs py-3 px-6 rounded-xl transition-all cursor-pointer text-center"
+                  >
+                    Register Shop
+                  </button>
                 </div>
 
               </div>
