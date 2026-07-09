@@ -386,6 +386,54 @@ export default function Dashboard({
                   status: l.status
                 })));
               }
+
+              const { data: fetchedCustomers, error: custFetchError } = await supabase
+                .from('customers')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+              if (!custFetchError && fetchedCustomers && fetchedCustomers.length > 0) {
+                setCustomers(fetchedCustomers.map((c: any) => ({
+                  id: c.id,
+                  name: c.name,
+                  phone: c.phone,
+                  email: c.email || `${c.name.toLowerCase().replace(/\s+/g, '')}@gmail.com`,
+                  address: c.address || 'Registered during Gold Loan pledge',
+                  aadhaar: c.aadhaar || '',
+                  pan: c.pan || '',
+                  avatar: c.avatar || '',
+                  kycStatus: c.kyc_status || 'Pending',
+                  activeLoans: c.active_loans_count || 0,
+                  registeredAt: c.created_at ? new Date(c.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Today'
+                })));
+              } else if (!custFetchError) {
+                // Seed database with mock customers
+                const defaultCustomers = [
+                  { name: 'Suresh Patil', phone: '+91 98452 11045', kyc_status: 'Verified', email: 'suresh.patil@gmail.com', address: 'Andheri West, Mumbai', aadhaar: '453298127432', pan: 'AHGPS9012K', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&h=150&q=80', active_loans_count: 1 },
+                  { name: 'Amit Sharma', phone: '+91 88795 32112', kyc_status: 'Verified', email: 'amit.sharma@yahoo.com', address: 'Dadar, Mumbai', aadhaar: '891234210092', pan: 'BZKPA3210F', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&h=150&q=80', active_loans_count: 1 },
+                  { name: 'Kavita Jadhav', phone: '+91 91102 78334', kyc_status: 'Verified', email: 'kavita.j@gmail.com', address: 'Kothrud, Pune', aadhaar: '672198014543', pan: 'CMKPD4598M', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&h=150&q=80', active_loans_count: 1 },
+                  { name: 'Ramesh Gupta', phone: '+91 70192 88471', kyc_status: 'Pending', email: 'ramesh.gupta@outlook.com', address: 'Thane, Mumbai', aadhaar: '203456129012', pan: 'EPKPG9821L', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&h=150&q=80', active_loans_count: 1 },
+                  { name: 'Prakash More', phone: '+91 99008 34112', kyc_status: 'Rejected', email: 'prakash.more@gmail.com', address: 'Hadapsar, Pune', aadhaar: '772109328843', pan: 'FJKPM1029Q', avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=150&h=150&q=80', active_loans_count: 0 }
+                ];
+                await supabase.from('customers').insert(defaultCustomers);
+                // Reload
+                const { data: reloaded } = await supabase.from('customers').select('*').order('created_at', { ascending: false });
+                if (reloaded) {
+                  setCustomers(reloaded.map((c: any) => ({
+                    id: c.id,
+                    name: c.name,
+                    phone: c.phone,
+                    email: c.email || `${c.name.toLowerCase().replace(/\s+/g, '')}@gmail.com`,
+                    address: c.address || 'Registered during Gold Loan pledge',
+                    aadhaar: c.aadhaar || '',
+                    pan: c.pan || '',
+                    avatar: c.avatar || '',
+                    kycStatus: c.kyc_status || 'Pending',
+                    activeLoans: c.active_loans_count || 0,
+                    registeredAt: c.created_at ? new Date(c.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Today'
+                  })));
+                }
+              }
             }
           } catch (e) {
             console.error("Supabase failed:", e);
@@ -718,7 +766,18 @@ export default function Dashboard({
                               )}
                               {cust.kycStatus !== 'Verified' && (
                                 <button
-                                  onClick={() => {
+                                  onClick={async () => {
+                                    if (isSupabaseConfigured && dbStatus === 'connected') {
+                                      const supabase = getSupabase();
+                                      if (supabase) {
+                                        try {
+                                          await supabase.from('customers').update({ kyc_status: 'Verified' }).eq('id', cust.id);
+                                        } catch (err) {
+                                          console.error("Supabase KYC approval failed:", err);
+                                        }
+                                      }
+                                    }
+
                                     const updated = customers.map(c => c.id === cust.id ? { ...c, kycStatus: 'Verified' } : c);
                                     setCustomers(updated);
                                     setActivities([{ id: `act-${Date.now()}`, text: `KYC Approved for ${cust.name}`, amount: null, time: 'Just now', type: 'update' }, ...activities]);
@@ -776,14 +835,42 @@ export default function Dashboard({
                     </div>
 
                     <form
-                      onSubmit={(e) => {
+                      onSubmit={async (e) => {
                         e.preventDefault();
                         if (!newCustForm.name || !newCustForm.phone) {
                           alert("Please fill in Name and Phone Number.");
                           return;
                         }
+
+                        let newCustId = `CUST-${Math.floor(100 + Math.random() * 900)}`;
+
+                        if (isSupabaseConfigured && dbStatus === 'connected') {
+                          const supabase = getSupabase();
+                          if (supabase) {
+                            try {
+                              const dbCust = {
+                                name: newCustForm.name,
+                                phone: newCustForm.phone,
+                                kyc_status: newCustForm.kycStatus,
+                                active_loans_count: 0,
+                                total_pledged_weight: 0,
+                                total_loan_amount: 0,
+                                avatar: newCustForm.avatar || ''
+                              };
+                              const { data, error } = await supabase.from('customers').insert(dbCust).select().single();
+                              if (!error && data) {
+                                newCustId = data.id;
+                              } else if (error) {
+                                console.error("Supabase customer insert error:", error);
+                              }
+                            } catch (err) {
+                              console.error("Supabase customer insert failed:", err);
+                            }
+                          }
+                        }
+
                         const newCust = {
-                          id: `CUST-${Math.floor(100 + Math.random() * 900)}`,
+                          id: newCustId,
                           name: newCustForm.name,
                           phone: newCustForm.phone,
                           email: newCustForm.email || 'no-email@suvarna.com',
@@ -992,12 +1079,29 @@ export default function Dashboard({
                     </div>
 
                     <form
-                      onSubmit={(e) => {
+                      onSubmit={async (e) => {
                         e.preventDefault();
                         if (!editingCustomer.name || !editingCustomer.phone) {
                           alert("Name and Phone Number are required.");
                           return;
                         }
+
+                        if (isSupabaseConfigured && dbStatus === 'connected') {
+                          const supabase = getSupabase();
+                          if (supabase) {
+                            try {
+                              await supabase.from('customers').update({
+                                name: editingCustomer.name,
+                                phone: editingCustomer.phone,
+                                kyc_status: editingCustomer.kycStatus,
+                                avatar: editingCustomer.avatar || ''
+                              }).eq('id', editingCustomer.id);
+                            } catch (err) {
+                              console.error("Supabase customer update failed:", err);
+                            }
+                          }
+                        }
+
                         const updated = customers.map(c => c.id === editingCustomer.id ? editingCustomer : c);
                         setCustomers(updated);
                         setActivities([{ 
