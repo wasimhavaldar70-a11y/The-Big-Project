@@ -451,11 +451,13 @@ export default function Dashboard({
 
   // Sync state back to localStorage for seamless local testing
   useEffect(() => {
-    const savedLoans = localStorage.getItem('suvarna_loans');
-    if (savedLoans) {
-      setLoans(JSON.parse(savedLoans));
+    if (!isSupabaseConfigured || dbStatus !== 'connected') {
+      const savedLoans = localStorage.getItem('suvarna_loans');
+      if (savedLoans) {
+        setLoans(JSON.parse(savedLoans));
+      }
     }
-  }, []);
+  }, [dbStatus]);
 
   // Submit Handler for New Loan
   const handleCreateLoan = async (e: React.FormEvent) => {
