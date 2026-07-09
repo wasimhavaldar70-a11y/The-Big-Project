@@ -51,3 +51,22 @@ model Activity {
 
   @@map("activities")
 }
+
+model ShopOwner {
+  id                String  @id
+  ownerName         String  @map("owner_name")
+  shopName          String  @map("shop_name")
+  email             String  @unique
+  phone             String
+  pin               String
+  password          String?
+  plan              String
+  status            String  @default("Active")
+  dateJoined        String  @map("date_joined")
+  loansCount        Int?    @map("loans_count")
+  totalPledgedGold  String? @map("total_pledged_gold")
+  outstandingAmount Float?  @map("outstanding_amount")
+
+  @@map("shop_owners")
+}
+

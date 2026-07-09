@@ -58,6 +58,8 @@ const DEFAULT_SHOP_OWNERS: ShopOwner[] = [
   }
 ];
 
+import { getSupabase, isSupabaseConfigured } from '../lib/supabase';
+
 export default function LoginModal({ isOpen, onClose, onLoginSuccess, onToggleSignUp }: LoginModalProps) {
   const [loginMethod, setLoginMethod] = useState<'pin' | 'password'>('pin');
   const [pin, setPin] = useState<string>('');
@@ -94,14 +96,65 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, onToggleSi
     setTimeout(() => setShake(false), 500);
   };
 
-  const handleSubmit = (e?: React.FormEvent) => {
+  const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setIsSubmitting(true);
     setError('');
 
-    const owners = getShopOwners();
+    let owners: ShopOwner[] = [];
+    if (isSupabaseConfigured) {
+      const supabase = getSupabase();
+      if (supabase) {
+        try {
+          const { data, error: dbError } = await supabase.from('shop_owners').select('*');
+          if (!dbError && data && data.length > 0) {
+            owners = data.map((o: any) => ({
+              id: o.id,
+              ownerName: o.owner_name,
+              shopName: o.shop_name,
+              email: o.email,
+              phone: o.phone,
+              pin: o.pin,
+              password: o.password || undefined,
+              plan: o.plan,
+              status: o.status,
+              dateJoined: o.date_joined,
+              loansCount: o.loans_count || 0,
+              totalPledgedGold: o.total_pledged_gold || '0 gm',
+              outstandingAmount: o.outstanding_amount || 0,
+            }));
+          } else {
+            // Seed the empty database table with defaults
+            const defaultMapped = DEFAULT_SHOP_OWNERS.map(o => ({
+              id: o.id,
+              owner_name: o.ownerName,
+              shop_name: o.shopName,
+              email: o.email,
+              phone: o.phone,
+              pin: o.pin,
+              password: o.password,
+              plan: o.plan,
+              status: o.status,
+              date_joined: o.dateJoined,
+              loans_count: o.loansCount || 0,
+              total_pledged_gold: o.totalPledgedGold || '0 gm',
+              outstanding_amount: o.outstandingAmount || 0,
+            }));
+            await supabase.from('shop_owners').insert(defaultMapped);
+            owners = DEFAULT_SHOP_OWNERS;
+          }
+        } catch (dbErr) {
+          console.error("Supabase load failed, falling back to local storage:", dbErr);
+          owners = getShopOwners();
+        }
+      } else {
+        owners = getShopOwners();
+      }
+    } else {
+      owners = getShopOwners();
+    }
 
-    // Simulate API authorization delay
+    // Simulate API authorization delay for authentic feel
     setTimeout(() => {
       if (loginMethod === 'pin') {
         // Super Admin PIN check
@@ -158,7 +211,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, onToggleSi
         }
       }
       setIsSubmitting(false);
-    }, 800);
+    }, 600);
   };
 
   if (!isOpen) return null;

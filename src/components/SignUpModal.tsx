@@ -33,6 +33,8 @@ const PLANS = [
   }
 ];
 
+import { getSupabase, isSupabaseConfigured } from '../lib/supabase';
+
 export default function SignUpModal({ isOpen, onClose, onSignUpSuccess }: SignUpModalProps) {
   const [step, setStep] = useState<1 | 2>(1);
   const [ownerName, setOwnerName] = useState('');
@@ -104,7 +106,7 @@ export default function SignUpModal({ isOpen, onClose, onSignUpSuccess }: SignUp
     return null;
   };
 
-  const handleNextStep = () => {
+  const handleNextStep = async () => {
     setError('');
     const step1Error = validateStep1();
     if (step1Error) {
@@ -113,8 +115,32 @@ export default function SignUpModal({ isOpen, onClose, onSignUpSuccess }: SignUp
       return;
     }
 
-    // Check duplicate email or shop name
-    const owners = getShopOwners();
+    setIsSubmitting(true);
+    let owners: { email: string; shopName: string }[] = [];
+    if (isSupabaseConfigured) {
+      const supabase = getSupabase();
+      if (supabase) {
+        try {
+          const { data, error: dbError } = await supabase.from('shop_owners').select('email, shop_name');
+          if (!dbError && data) {
+            owners = data.map((o: any) => ({
+              email: o.email,
+              shopName: o.shop_name
+            }));
+          } else {
+            owners = getShopOwners();
+          }
+        } catch (e) {
+          owners = getShopOwners();
+        }
+      } else {
+        owners = getShopOwners();
+      }
+    } else {
+      owners = getShopOwners();
+    }
+    setIsSubmitting(false);
+
     const duplicateEmail = owners.some(o => o.email.toLowerCase() === email.trim().toLowerCase());
     const duplicateShop = owners.some(o => o.shopName.toLowerCase() === shopName.trim().toLowerCase());
 
@@ -133,7 +159,7 @@ export default function SignUpModal({ isOpen, onClose, onSignUpSuccess }: SignUp
     setStep(2);
   };
 
-  const handleSignUp = (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -151,60 +177,98 @@ export default function SignUpModal({ isOpen, onClose, onSignUpSuccess }: SignUp
 
     setIsSubmitting(true);
 
-    setTimeout(() => {
-      try {
-        const owners = getShopOwners();
-        
-        // Double check pin unique
-        if (owners.some(o => o.pin === pin)) {
-          setError('This 4-digit PIN is already chosen. Please select a different PIN.');
-          triggerShake();
-          setIsSubmitting(false);
-          return;
+    let owners: { pin: string }[] = [];
+    if (isSupabaseConfigured) {
+      const supabase = getSupabase();
+      if (supabase) {
+        try {
+          const { data, error: dbError } = await supabase.from('shop_owners').select('pin');
+          if (!dbError && data) {
+            owners = data;
+          } else {
+            owners = getShopOwners();
+          }
+        } catch (e) {
+          owners = getShopOwners();
         }
-
-        const date = new Date();
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        const formattedDate = `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
-
-        const newOwner: ShopOwner = {
-          id: `owner-${Date.now()}`,
-          ownerName: ownerName.trim(),
-          shopName: shopName.trim(),
-          email: email.trim().toLowerCase(),
-          phone: phone.trim(),
-          pin,
-          password,
-          plan: selectedPlan,
-          status: 'Active',
-          dateJoined: formattedDate,
-          loansCount: 0,
-          totalPledgedGold: '0.0 gm',
-          outstandingAmount: 0
-        };
-
-        const updatedOwners = [...owners, newOwner];
-        localStorage.setItem('suvarna_shop_owners', JSON.stringify(updatedOwners));
-
-        onSignUpSuccess(newOwner);
-        onClose();
-        
-        // Reset states
-        setStep(1);
-        setOwnerName('');
-        setShopName('');
-        setEmail('');
-        setPhone('');
-        setPin('');
-        setPassword('');
-        setSelectedPlan('Sovereign Pro');
-      } catch (err) {
-        setError('Failed to create account. Please try again.');
-        triggerShake();
-      } finally {
-        setIsSubmitting(false);
+      } else {
+        owners = getShopOwners();
       }
-    }, 1200);
+    } else {
+      owners = getShopOwners();
+    }
+
+    // Double check pin unique
+    if (owners.some(o => o.pin === pin)) {
+      setError('This 4-digit PIN is already chosen. Please select a different PIN.');
+      triggerShake();
+      setIsSubmitting(false);
+      return;
+    }
+
+    const date = new Date();
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const formattedDate = `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
+
+    const newOwner: ShopOwner = {
+      id: `owner-${Date.now()}`,
+      ownerName: ownerName.trim(),
+      shopName: shopName.trim(),
+      email: email.trim().toLowerCase(),
+      phone: phone.trim(),
+      pin,
+      password,
+      plan: selectedPlan,
+      status: 'Active',
+      dateJoined: formattedDate,
+      loansCount: 0,
+      totalPledgedGold: '0.0 gm',
+      outstandingAmount: 0
+    };
+
+    if (isSupabaseConfigured) {
+      const supabase = getSupabase();
+      if (supabase) {
+        try {
+          const dbData = {
+            id: newOwner.id,
+            owner_name: newOwner.ownerName,
+            shop_name: newOwner.shopName,
+            email: newOwner.email,
+            phone: newOwner.phone,
+            pin: newOwner.pin,
+            password: newOwner.password,
+            plan: newOwner.plan,
+            status: newOwner.status,
+            date_joined: newOwner.dateJoined,
+            loans_count: newOwner.loansCount,
+            total_pledged_gold: newOwner.totalPledgedGold,
+            outstanding_amount: newOwner.outstandingAmount
+          };
+          await supabase.from('shop_owners').insert(dbData);
+        } catch (dbErr) {
+          console.error("Supabase registration insert failed:", dbErr);
+        }
+      }
+    }
+
+    const localOwners = getShopOwners();
+    const updatedOwners = [...localOwners, newOwner];
+    localStorage.setItem('suvarna_shop_owners', JSON.stringify(updatedOwners));
+
+    onSignUpSuccess(newOwner);
+    onClose();
+    
+    // Reset states
+    setStep(1);
+    setOwnerName('');
+    setShopName('');
+    setEmail('');
+    setPhone('');
+    setPin('');
+    setPassword('');
+    setSelectedPlan('Sovereign Pro');
+    setIsSubmitting(false);
   };
 
   return (

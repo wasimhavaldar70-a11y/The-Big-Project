@@ -6,6 +6,7 @@ import {
   Power, Search, Lock, DollarSign, Award, ArrowLeft, RefreshCw, BarChart3, TrendingUp
 } from 'lucide-react';
 import { ShopOwner } from './LoginModal';
+import { getSupabase, isSupabaseConfigured } from '../lib/supabase';
 
 interface SuperAdminDashboardProps {
   onLogout: () => void;
@@ -37,7 +38,38 @@ export default function SuperAdminDashboard({ onLogout, onImpersonateOwner }: Su
     loadShopOwners();
   }, []);
 
-  const loadShopOwners = () => {
+  const loadShopOwners = async () => {
+    if (isSupabaseConfigured) {
+      const supabase = getSupabase();
+      if (supabase) {
+        try {
+          const { data, error } = await supabase.from('shop_owners').select('*');
+          if (!error && data && data.length > 0) {
+            const mapped = data.map((o: any) => ({
+              id: o.id,
+              ownerName: o.owner_name,
+              shopName: o.shop_name,
+              email: o.email,
+              phone: o.phone,
+              pin: o.pin,
+              password: o.password || undefined,
+              plan: o.plan,
+              status: o.status,
+              dateJoined: o.date_joined,
+              loansCount: o.loans_count || 0,
+              totalPledgedGold: o.total_pledged_gold || '0 gm',
+              outstandingAmount: o.outstanding_amount || 0,
+            }));
+            setShopOwners(mapped);
+            localStorage.setItem('suvarna_shop_owners', JSON.stringify(mapped));
+            return;
+          }
+        } catch (e) {
+          console.error("Supabase load failed in admin, falling back to local storage:", e);
+        }
+      }
+    }
+
     const stored = localStorage.getItem('suvarna_shop_owners');
     if (stored) {
       setShopOwners(JSON.parse(stored));
@@ -77,25 +109,50 @@ export default function SuperAdminDashboard({ onLogout, onImpersonateOwner }: Su
     setIsFormOpen(true);
   };
 
-  const handleToggleStatus = (id: string) => {
-    const updated = shopOwners.map(owner => {
-      if (owner.id === id) {
-        const newStatus: ShopOwner['status'] = owner.status === 'Active' ? 'Suspended' : 'Active';
-        return { ...owner, status: newStatus };
+  const handleToggleStatus = async (id: string) => {
+    const owner = shopOwners.find(o => o.id === id);
+    if (!owner) return;
+    const newStatus: ShopOwner['status'] = owner.status === 'Active' ? 'Suspended' : 'Active';
+
+    if (isSupabaseConfigured) {
+      const supabase = getSupabase();
+      if (supabase) {
+        try {
+          await supabase.from('shop_owners').update({ status: newStatus }).eq('id', id);
+        } catch (e) {
+          console.error("Supabase update status failed:", e);
+        }
       }
-      return owner;
+    }
+
+    const updated = shopOwners.map(o => {
+      if (o.id === id) {
+        return { ...o, status: newStatus };
+      }
+      return o;
     });
     saveShopOwnersToStorage(updated);
   };
 
-  const handleDeleteOwner = (id: string, name: string) => {
+  const handleDeleteOwner = async (id: string, name: string) => {
     if (window.confirm(`Are you sure you want to permanently delete Shop Owner "${name}"? This action cannot be undone.`)) {
+      if (isSupabaseConfigured) {
+        const supabase = getSupabase();
+        if (supabase) {
+          try {
+            await supabase.from('shop_owners').delete().eq('id', id);
+          } catch (e) {
+            console.error("Supabase delete failed:", e);
+          }
+        }
+      }
+
       const updated = shopOwners.filter(owner => owner.id !== id);
       saveShopOwnersToStorage(updated);
     }
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError('');
 
@@ -109,19 +166,42 @@ export default function SuperAdminDashboard({ onLogout, onImpersonateOwner }: Su
 
     if (editingOwner) {
       // Edit mode
+      const updatedOwner: ShopOwner = {
+        ...editingOwner,
+        ownerName: ownerName.trim(),
+        shopName: shopName.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        pin,
+        password,
+        plan,
+        status
+      };
+
+      if (isSupabaseConfigured) {
+        const supabase = getSupabase();
+        if (supabase) {
+          try {
+            const dbData = {
+              owner_name: updatedOwner.ownerName,
+              shop_name: updatedOwner.shopName,
+              email: updatedOwner.email,
+              phone: updatedOwner.phone,
+              pin: updatedOwner.pin,
+              password: updatedOwner.password,
+              plan: updatedOwner.plan,
+              status: updatedOwner.status
+            };
+            await supabase.from('shop_owners').update(dbData).eq('id', editingOwner.id);
+          } catch (e) {
+            console.error("Supabase update failed:", e);
+          }
+        }
+      }
+
       const updated = shopOwners.map(owner => {
         if (owner.id === editingOwner.id) {
-          return {
-            ...owner,
-            ownerName: ownerName.trim(),
-            shopName: shopName.trim(),
-            email: email.trim(),
-            phone: phone.trim(),
-            pin,
-            password,
-            plan,
-            status
-          };
+          return updatedOwner;
         }
         return owner;
       });
@@ -148,6 +228,33 @@ export default function SuperAdminDashboard({ onLogout, onImpersonateOwner }: Su
         totalPledgedGold: '0.0 gm',
         outstandingAmount: 0
       };
+
+      if (isSupabaseConfigured) {
+        const supabase = getSupabase();
+        if (supabase) {
+          try {
+            const dbData = {
+              id: newOwner.id,
+              owner_name: newOwner.ownerName,
+              shop_name: newOwner.shopName,
+              email: newOwner.email,
+              phone: newOwner.phone,
+              pin: newOwner.pin,
+              password: newOwner.password,
+              plan: newOwner.plan,
+              status: newOwner.status,
+              date_joined: newOwner.dateJoined,
+              loans_count: newOwner.loansCount,
+              total_pledged_gold: newOwner.totalPledgedGold,
+              outstanding_amount: newOwner.outstandingAmount
+            };
+            await supabase.from('shop_owners').insert(dbData);
+          } catch (e) {
+            console.error("Supabase insert failed:", e);
+          }
+        }
+      }
+
       saveShopOwnersToStorage([...shopOwners, newOwner]);
     }
 
