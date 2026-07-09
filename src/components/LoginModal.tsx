@@ -22,7 +22,6 @@ interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
   onLoginSuccess: (role: 'superadmin' | 'owner', ownerData?: ShopOwner) => void;
-  onToggleSignUp?: () => void;
 }
 
 const DEFAULT_SHOP_OWNERS: ShopOwner[] = [
@@ -60,7 +59,7 @@ const DEFAULT_SHOP_OWNERS: ShopOwner[] = [
 
 import { getSupabase, isSupabaseConfigured } from '../lib/supabase';
 
-export default function LoginModal({ isOpen, onClose, onLoginSuccess, onToggleSignUp }: LoginModalProps) {
+export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps) {
   const [loginMethod, setLoginMethod] = useState<'pin' | 'password'>('pin');
   const [pin, setPin] = useState<string>('');
   const [username, setUsername] = useState<string>('');
@@ -435,17 +434,6 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, onToggleSi
             </form>
           )}
 
-          {onToggleSignUp && (
-            <div className="mt-4 pt-3 border-t border-slate-100 text-center">
-              <button
-                type="button"
-                onClick={onToggleSignUp}
-                className="text-[11px] font-bold text-slate-500 hover:text-[#0A1A36] transition-colors cursor-pointer inline-flex items-center gap-1"
-              >
-                Don't have an account? <span className="text-amber-600 hover:text-amber-700 underline">Register your business</span>
-              </button>
-            </div>
-          )}
         </motion.div>
       </div>
     </AnimatePresence>

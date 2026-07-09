@@ -12,7 +12,6 @@ import BookDemoModal from './components/BookDemoModal';
 import InteractiveChatSupport from './components/InteractiveChatSupport';
 import Dashboard from './components/Dashboard';
 import LoginModal, { ShopOwner } from './components/LoginModal';
-import SignUpModal from './components/SignUpModal';
 import LiveToastHub from './components/LiveToastHub';
 import SuperAdminDashboard from './components/SuperAdminDashboard';
 import { FAQ_ITEMS } from './data';
@@ -41,7 +40,6 @@ export default function App() {
   });
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
-  const [isSignUpModalOpen, setIsSignUpModalOpen] = useState<boolean>(false);
   const [view, setView] = useState<'landing' | 'dashboard'>(() => {
     return localStorage.getItem('suvarna_logged_in') === 'true' ? 'dashboard' : 'landing';
   });
@@ -331,17 +329,10 @@ export default function App() {
               <div className="flex items-center gap-2">
                 <button 
                   onClick={() => setIsLoginModalOpen(true)}
-                  className="border border-slate-200 bg-slate-50 text-slate-700 hover:border-[#DF9F28] hover:text-[#0A1A36] font-bold text-xs py-2 px-3.5 rounded-xl transition-all cursor-pointer hover:bg-slate-100 shadow-2xs flex items-center gap-1.5 shrink-0"
+                  className="border border-slate-200 bg-slate-50 text-slate-700 hover:border-[#DF9F28] hover:text-[#0A1A36] font-bold text-xs py-2 px-4 rounded-xl transition-all cursor-pointer hover:bg-slate-100 shadow-2xs flex items-center gap-1.5 shrink-0"
                 >
                   <Lock className="w-3.5 h-3.5 text-slate-400" />
                   <span>Owner Log In</span>
-                </button>
-                <button 
-                  onClick={() => setIsSignUpModalOpen(true)}
-                  className="border border-amber-500/30 bg-amber-50 text-amber-950 hover:bg-amber-100 hover:border-amber-500/60 font-bold text-xs py-2 px-3.5 rounded-xl transition-all cursor-pointer shadow-2xs flex items-center gap-1.5 shrink-0"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                  <span>Sign Up</span>
                 </button>
               </div>
             )}
@@ -460,19 +451,12 @@ export default function App() {
                   </p>
                 </div>
 
-                {/* Authentication actions */}
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full pt-2">
                   <button 
                     onClick={() => setIsLoginModalOpen(true)}
-                    className="w-full sm:w-auto bg-[#0A1A36] hover:bg-[#1B2B4C] text-white font-bold text-xs py-3 px-6 rounded-xl transition-all cursor-pointer shadow-md text-center"
+                    className="w-full sm:w-auto bg-[#0A1A36] hover:bg-[#1B2B4C] text-white font-bold text-xs py-3.5 px-8 rounded-xl transition-all cursor-pointer shadow-md text-center"
                   >
                     Log in to Dashboard
-                  </button>
-                  <button 
-                    onClick={() => setIsSignUpModalOpen(true)}
-                    className="w-full sm:w-auto border border-amber-500 text-amber-600 hover:bg-amber-50 font-bold text-xs py-3 px-6 rounded-xl transition-all cursor-pointer text-center"
-                  >
-                    Register Shop
                   </button>
                 </div>
 
@@ -1632,10 +1616,6 @@ export default function App() {
       <LoginModal 
         isOpen={isLoginModalOpen} 
         onClose={() => setIsLoginModalOpen(false)} 
-        onToggleSignUp={() => {
-          setIsLoginModalOpen(false);
-          setIsSignUpModalOpen(true);
-        }}
         onLoginSuccess={(role, ownerData) => {
           setIsLoggedIn(true);
           localStorage.setItem('suvarna_logged_in', 'true');
@@ -1654,22 +1634,6 @@ export default function App() {
         }}
       />
 
-      {/* JEWELRY BUSINESS SIGN UP MODAL */}
-      <SignUpModal 
-        isOpen={isSignUpModalOpen} 
-        onClose={() => setIsSignUpModalOpen(false)} 
-        onSignUpSuccess={(ownerData) => {
-          setIsLoggedIn(true);
-          localStorage.setItem('suvarna_logged_in', 'true');
-          setUserRole('owner');
-          localStorage.setItem('suvarna_user_role', 'owner');
-          setCurrentOwner(ownerData);
-          localStorage.setItem('suvarna_current_owner', JSON.stringify(ownerData));
-          setIsImpersonating(false);
-          localStorage.removeItem('suvarna_is_impersonating');
-          setView('dashboard');
-        }}
-      />
 
       {/* PRODUCT TOUR MODAL */}
       {isTourOpen && (
